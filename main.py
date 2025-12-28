@@ -54,13 +54,21 @@ def find_account(acc_no, pin=None):
                 return acc
     return None
 
+def delete_account(acc_no, pin):
+    for acc in st.session_state.accounts:
+        if acc.account_number == acc_no and acc.get_pin() == pin:
+            st.session_state.accounts.remove(acc)
+            return True
+    return False
+
+
 # Frontend Logic
 st.set_page_config(page_title='Banking System', page_icon='🏦')
 st.title("🏦 Simple Bank Management System")
 
 menu = st.sidebar.selectbox(
     "Select Option",
-    ["Create Account", "Deposit", "Withdraw", "Transfer", "Check Balance", "All Accounts"]
+    ["Create Account", "Deposit", "Withdraw", "Transfer", "Check Balance", 'Delete Account', "All Accounts"]
 )
 
 # Create Account
@@ -145,6 +153,19 @@ elif menu == "Check Balance":
             st.success(f"Current Balance: Rs {acc.get_balance()}")
         else:
             st.error("Invalid Account or PIN")
+
+# Delete Account
+elif menu == "Delete Account":
+    st.header("Delete Account")
+
+    acc_no = st.number_input("Account Number", min_value=1000, max_value=9999)
+    pin = st.number_input("PIN", min_value=1000, max_value=9999)
+
+    if st.button("Delete"):
+        if delete_account(acc_no, pin):
+            st.success("Account Deleted Successfully")
+        else:
+            st.error("Invalid Account Number or PIN")
 
 # All Accounts
 elif menu == "All Accounts":
